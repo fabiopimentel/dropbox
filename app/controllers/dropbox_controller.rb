@@ -1,6 +1,7 @@
 require 'fileutils'
 class DropboxController < ApplicationController
   TMP_DIR = File.join(Rails.root, "tmp")
+  PUBLIC_DIR = File.join(Rails.root,"public")
   DROPBOX_DIR = File.join(TMP_DIR,"dropbox/")
 
  def index
@@ -22,13 +23,19 @@ class DropboxController < ApplicationController
   end
 
   def upload
-    return redirect_to(:action => 'authorize') unless session[:dropbox_session]
-    dropbox_session = Dropbox::Session.deserialize(session[:dropbox_session])
-    return redirect_to(:action => 'authorize') unless dropbox_session.authorized?
+  #  return redirect_to(:action => 'authorize') unless session[:dropbox_session]
+   # dropbox_session = Dropbox::Session.deserialize(session[:dropbox_session])
+   # return redirect_to(:action => 'authorize') unless dropbox_session.authorized?
 
     if request.method == 'POST' then
-      dropbox_session.mode = :dropbox
-      dropbox_session.upload  params[:file].tempfile, 'RCase',{:as=>params[:file].original_filename}
+    #	FileUtils.cp("/public/"+ params[:file].tempfile.path, params[:file].original_filename)
+     # dropbox_session.mode = :dropbox
+     # dropbox_session.upload  params[:file].tempfile, 'RCase',{:as=>params[:file].original_filename}
+      tmp = params[:file].tempfile
+      file = File.join("public", params[:file].original_filename)
+      FileUtils.cp tmp.path, file
+			#FileUtils.rm file
+			
       render :text => 'Uploaded OK'  
     else
       redirect_to(:action => 'index', :notice => 'Upload Fail')
@@ -43,6 +50,8 @@ class DropboxController < ApplicationController
       dropbox_session.mode = :dropbox
     	arquivos= dropbox_session.list("RCase")
       file = dropbox_session.download("RCase/teste.zip")
+      File.cp("/" + params[:file].tempfile.path, '~/Documents/dropbox/' + params[:file].original_filename)
+      params[:file].tempfile.unlink
     	p file
     	#arquivos.each {|x| print x.path,dropbox_session.download(x.path)}
       render :text => 'Downloaded OK'  
