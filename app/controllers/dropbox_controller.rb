@@ -43,6 +43,7 @@ class DropboxController < ApplicationController
   end
   
   def lista
+=begin
   	return redirect_to(:action => 'authorize') unless session[:dropbox_session]
     dropbox_session = Dropbox::Session.deserialize(session[:dropbox_session])
     return redirect_to(:action => 'authorize') unless dropbox_session.authorized?
@@ -58,7 +59,7 @@ class DropboxController < ApplicationController
     else
       redirect_to(:action => 'index', :notice => 'Download Fail')
     end
-    
+=end
   
   end
 end
